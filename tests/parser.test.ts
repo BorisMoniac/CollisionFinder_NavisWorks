@@ -9,10 +9,10 @@ import {markerPoint,defaultSettings,showMarkers,focusMarker,hideMarkers,warningS
 import {columnValue,tableColumns} from '../src/columns';
 import {rowsForTests,subsetReport,summarize} from '../src/workflow';
 
-const fixture=readFileSync('../ОТЧЕТЫ NAVISWORKS/ЗМ01-100-00.html','utf8');
+const fixture=readFileSync('tests/fixtures/navisworks.html','utf8');
 const xml=`<?xml version="1.0"?><exchange><batchtest><clashtests><clashtest name="Проверка"><clashresults><clashgroup name="Группа А"><clashresults><clashresult name="Коллизия 1" status="new" distance="-0.1" href="img.jpg"><clashpoint><pos3f x="0" y="-1.5" z="4"/></clashpoint><clashobjects><clashobject><objectattribute><name>IfcGUID</name><value>3LBE45tFTCHgZsJcGxf7ep</value></objectattribute><pathlink><node>model.ifc</node></pathlink></clashobject><clashobject><objectattribute><name>GlobalId</name><value>3LBE45tFTCHgZsJcGxf7es</value></objectattribute></clashobject></clashobjects></clashresult></clashresults></clashgroup></clashresults></clashtest><clashtest name="Пустая"/></clashtests></batchtest></exchange>`;
 
-describe('Реальный отчёт пользователя',()=>{
+describe('HTML-отчёт Navisworks',()=>{
   it('читает все строки, проверки, GUID, координаты и исходные колонки HTML',()=>{
     const report=parseReport(fixture,'ЗМ01-100-00.html');
     const clash=report.tests[0].clashes[0];
