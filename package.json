@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/albatros/schema.json",
+  "name": "nashepo.collision360",
+  "version": "0.5.0",
+  "apx": true,
+  "displayName": "НашеПО · Коллизии",
+  "description": "Просмотр отчетов Navisworks HTML/XML и навигация по объектам IFC/SMDX",
+  "main": "src/index.ts",
+  "sdk": "^1.4.0",
+  "scripts": {
+    "serve": "albatros-cli serve",
+    "prebuild": "node scripts/clean-build.mjs",
+    "build": "albatros-cli build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "preview": "node scripts/preview.mjs"
+  },
+  "devDependencies": {"albatros": "1.4.2", "typescript": "~5.9.3", "vitest": "^3.2.4", "jsdom": "^26.1.0", "esbuild": "^0.25.0"},
+  "albatros": {
+    "actions": {"collision_open": {"label": "Отчёты о коллизиях", "cmd": "open", "icon": "report_problem"}},
+    "menu": [{"label": "Коллизии", "submenu": [{"action": "collision_open"}]}],
+    "pages": [{"tag": "collision_tools", "label": "Коллизии", "groups": [{"tag": "collision_reports", "label": "Navisworks", "items": [{"tag": "bt", "action": "collision_open"}]}]}],
+    "viewsContainers": {"collision_bottom": {"label": "Коллизии", "icon": "fact_check", "container": "bottom"}},
+    "views": {"collision_panel": {"label": "Коллизии", "type": "defined", "cmd": "mount", "container": "collision_bottom", "expanded": true}}
+  }
+}
