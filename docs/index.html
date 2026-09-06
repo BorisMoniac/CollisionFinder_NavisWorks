@@ -1,11 +1,4 @@
-import {copyFileSync,mkdirSync,readdirSync,writeFileSync} from 'node:fs';
-import {resolve} from 'node:path';
-
-const root=resolve(import.meta.dirname,'..');
-const pluginUrl='https://borismoniac.github.io/CollisionFinder_NavisWorks/';
-const installUrl=`https://360.topomatic.ru/?extensionInstallPath=${encodeURIComponent(pluginUrl)}`;
-
-writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
+<!doctype html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
@@ -20,21 +13,8 @@ writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
   <h1>НашеПО · Коллизии</h1>
   <p>Плагин для загрузки HTML/XML-отчётов Navisworks, просмотра коллизий и навигации по их координатам в Топоматик 360.</p>
   <label class="address-label" for="plugin-url">Адрес плагина</label>
-  <div class="address"><input id="plugin-url" value="${pluginUrl}" readonly><button id="copy-url" type="button">Копировать</button></div>
-  <div class="buttons"><a class="button" href="${installUrl}">Открыть установку в веб-версии</a><a class="button secondary" href="https://github.com/BorisMoniac/CollisionFinder_NavisWorks">Исходный код</a></div>
+  <div class="address"><input id="plugin-url" value="https://borismoniac.github.io/CollisionFinder_NavisWorks/" readonly><button id="copy-url" type="button">Копировать</button></div>
+  <div class="buttons"><a class="button" href="https://360.topomatic.ru/?extensionInstallPath=https%3A%2F%2Fborismoniac.github.io%2FCollisionFinder_NavisWorks%2F">Открыть установку в веб-версии</a><a class="button secondary" href="https://github.com/BorisMoniac/CollisionFinder_NavisWorks">Исходный код</a></div>
   <ol><li>Откройте в настольном Топоматик 360 раздел <b>Плагины</b>.</li><li>Выберите <b>Установить плагин</b>.</li><li>Скопируйте адрес выше, вставьте его в поле и подтвердите установку.</li><li>Откройте нижнюю вкладку <b>Коллизии</b>.</li></ol>
   <p><small>Разработчик: <a href="https://nashepo.ru/">НашеПО</a> · <a href="https://t.me/RoburFan">Telegram-сообщество</a></small></p>
-</main><script>const input=document.getElementById('plugin-url'),button=document.getElementById('copy-url');button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(input.value)}catch{input.select();document.execCommand('copy')}button.textContent='Скопировано';setTimeout(()=>button.textContent='Копировать',1600)})</script></body></html>\n`,'utf8');
-
-const published=resolve(root,'docs');
-function copyTree(source,target) {
-  mkdirSync(target,{recursive:true});
-  for(const entry of readdirSync(source,{withFileTypes:true})) {
-    const from=resolve(source,entry.name);
-    const to=resolve(target,entry.name);
-    if(entry.isDirectory())copyTree(from,to);
-    else copyFileSync(from,to);
-  }
-}
-copyTree(resolve(root,'dist'),published);
-writeFileSync(resolve(published,'.nojekyll'),'','utf8');
+</main><script>const input=document.getElementById('plugin-url'),button=document.getElementById('copy-url');button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(input.value)}catch{input.select();document.execCommand('copy')}button.textContent='Скопировано';setTimeout(()=>button.textContent='Копировать',1600)})</script></body></html>

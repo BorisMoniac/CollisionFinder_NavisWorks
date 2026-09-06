@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/albatros/schema.json",
   "name": "nashepo.collision360",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "displayName": "НашеПО · Коллизии",
   "description": "Просмотр отчетов Navisworks HTML/XML и навигация по объектам IFC/SMDX",
   "author": {"name": "НашеПО", "url": "https://nashepo.ru/"},
@@ -12,14 +12,12 @@
   "main": "src/index.ts",
   "sdk": "^1.4.0",
   "scripts": {
-    "serve": "albatros-cli serve",
     "prebuild": "node scripts/clean-build.mjs",
     "build": "albatros-cli build",
     "postbuild": "node scripts/create-publish-index.mjs",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit"
   },
-  "devDependencies": {"albatros": "1.4.2", "typescript": "~5.9.3", "vitest": "^3.2.4", "jsdom": "^26.1.0", "esbuild": "^0.25.0"},
+  "devDependencies": {"albatros": "1.4.2", "typescript": "~5.9.3"},
   "albatros": {
     "actions": {"collision_open": {"label": "Отчёты о коллизиях", "cmd": "open", "icon": "report_problem"}},
     "menu": [{"label": "Коллизии", "submenu": [{"action": "collision_open"}]}],
