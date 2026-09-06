@@ -26,7 +26,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
   const root=container.attachShadow?container.shadowRoot||container.attachShadow({mode:'open'}):container;
   root.innerHTML=`<style>${css}${darkCss}</style><main class="app">
     <header>
-      <div class="brand"><img src="${brandLogo}" alt=""><strong>НашеПО</strong><span class="version">0.5.2</span></div>
+      <div class="brand"><img src="${brandLogo}" alt=""><strong>НашеПО</strong><span class="version">0.5.3</span></div>
       <div class="toolbar"><button class="primary" id="import">＋ Открыть отчёт</button><label class="toolbar-report">Отчёт<select id="reports" aria-label="Текущий отчёт"></select></label><button id="folder" title="Подключить папку со снимками отчёта">Снимки</button><button id="columns">Столбцы</button><button id="open-session" title="Продолжить работу из файла сессии">Открыть сессию</button><button id="session" title="Сохранить текущую работу в переносимый файл">Сохранить сессию</button><button id="export" title="Отчёт для передачи и печати">Сформировать отчёт</button><button id="help" aria-label="Справка">? Справка</button></div>
       <input type="file" id="files" accept=".html,.htm,.xml" multiple hidden><input type="file" id="session-file" accept=".json,.collision360.json" hidden><input type="file" id="directory" webkitdirectory multiple hidden>
       <div class="notice" role="status" id="message">${e(host.mode)}</div>

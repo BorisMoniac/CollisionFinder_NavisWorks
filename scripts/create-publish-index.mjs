@@ -16,7 +16,7 @@ writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
   </style>
 </head>
 <body><main>
-  <small>Версия 0.5.2</small>
+  <small>Версия 0.5.3</small>
   <h1>НашеПО · Коллизии</h1>
   <p>Плагин для загрузки HTML/XML-отчётов Navisworks, просмотра коллизий и навигации по их координатам в Топоматик 360.</p>
   <label class="address-label" for="plugin-url">Адрес плагина</label>

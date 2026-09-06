@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/albatros/schema.json",
   "name": "nashepo.collision360",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "displayName": "НашеПО · Коллизии",
   "description": "Просмотр отчетов Navisworks HTML/XML и навигация по объектам IFC/SMDX",
   "author": {"name": "НашеПО", "url": "https://nashepo.ru/"},

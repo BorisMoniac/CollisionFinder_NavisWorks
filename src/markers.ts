@@ -60,15 +60,19 @@ export function warningShapes(point:[number,number,number],radius:number,color:s
   return shapes;
 }
 
-function markerAnnotation(ctx:Context,clash:Clash,index:number,settings:MarkerSettings,onSelect:(id:string)=>void,color:string,withLabel:boolean):AnnotationSimple {
+function markerAnnotations(ctx:Context,clash:Clash,index:number,settings:MarkerSettings,onSelect:(id:string)=>void,color:string,withLabel:boolean):Annotation[] {
   const point=markerPoint(clash,settings)!;
   const state=clash.excluded?'  [ИСКЛЮЧЕНА]':clash.reviewed?'  [ОТРАБОТАНА]':'';
   const caption=`#${index+1}  ${clash.name||'Коллизия'}${state}`;
   const activate=()=>{onSelect(clash.id);focusMarker(ctx,clash,settings);};
   const shapes=warningShapes(point,settings.radius,color,settings.showStem,settings.stemWidth);
-  const annotation:AnnotationSimple={id:clash.id,type:'simple',position:[point[0],point[1]-settings.radius*.2,point[2]+settings.radius*5.35],shapes,activeShapes:shapes,attachment:'above',activateCommand:activate,dblCommand:activate};
-  if(withLabel) Object.assign(annotation,{label:caption,description:clash.group||clash.status||'Без статуса',labelColor:color===settings.selectedColor?'#171717':'#ffffff',labelBackground:color});
-  return annotation;
+  const annotations:Annotation[]=[{id:clash.id,type:'shaped',shapes,activeShapes:shapes,activateCommand:activate,dblCommand:activate}];
+  if(withLabel) annotations.push({id:clash.id+':label',type:'simple',position:[point[0],point[1]-settings.radius*.2,point[2]+settings.radius*5.35],attachment:'above',activateCommand:activate,dblCommand:activate,label:caption,description:clash.group||clash.status||'Без статуса',labelColor:color===settings.selectedColor?'#171717':'#ffffff',labelBackground:color});
+  return annotations;
+}
+
+function addMarker(layer:AnnotationLayer,ctx:Context,clash:Clash,index:number,settings:MarkerSettings,onSelect:(id:string)=>void,color:string,withLabel:boolean):void {
+  for(const annotation of markerAnnotations(ctx,clash,index,settings,onSelect,color,withLabel))layer.add(annotation);
 }
 
 function baseSignature(clashes:Clash[],settings:MarkerSettings):string {
@@ -90,12 +94,12 @@ export function showMarkers(ctx:Context,clashes:Clash[],settings:MarkerSettings,
     clashes.forEach((clash,index)=>{
       if(!clash.enabled||!markerPoint(clash,settings))return;
       const color=clash.excluded?'#78818c':clash.reviewed?settings.reviewedColor:settings.unreviewedColor;
-      base!.add<AnnotationSimple>(markerAnnotation(ctx,clash,index,settings,onSelect,color,settings.labelMode==='all'));
+      addMarker(base!,ctx,clash,index,settings,onSelect,color,settings.labelMode==='all');
     });
   }
   const selectedIndex=clashes.findIndex(clash=>clash.id===selectedId);
   const selected=clashes[selectedIndex];
-  if(selected?.enabled&&markerPoint(selected,settings)) selectedLayer.add<AnnotationSimple>(markerAnnotation(ctx,selected,selectedIndex,settings,onSelect,settings.selectedColor,settings.labelMode==='selected'));
+  if(selected?.enabled&&markerPoint(selected,settings)) addMarker(selectedLayer,ctx,selected,selectedIndex,settings,onSelect,settings.selectedColor,settings.labelMode==='selected');
   base.visible=true;selectedLayer.visible=true;
   states.set(cadview as object,{signature});
   cadview.invalidate();
@@ -117,10 +121,11 @@ export function focusMarker(ctx:Context,clash:Clash,settings:MarkerSettings):str
   if(!point) throw Error('В отчёте нет координат этой коллизии.');
   if(!cadview) throw Error('Откройте окно проекта Топоматик 360.');
   const distance=settings.navigationRadius;
-  const view:[number,number,number]=[1.35,-1.35,.8];
+  const target:[number,number,number]=[point[0],point[1],point[2]+settings.radius*3.45];
+  const view:[number,number,number]=[1.35,-1.35,.22];
   const viewLength=Math.hypot(...view);
-  const eye:[number,number,number]=[point[0]+view[0]/viewLength*distance,point[1]+view[1]/viewLength*distance,point[2]+view[2]/viewLength*distance];
-  const raw:[number,number,number]=[point[0]-eye[0],point[1]-eye[1],point[2]-eye[2]];
+  const eye:[number,number,number]=[target[0]+view[0]/viewLength*distance,target[1]+view[1]/viewLength*distance,target[2]+view[2]/viewLength*distance];
+  const raw:[number,number,number]=[target[0]-eye[0],target[1]-eye[1],target[2]-eye[2]];
   const length=Math.hypot(...raw)||1;
   const direction:[number,number,number]=[raw[0]/length,raw[1]/length,raw[2]/length];
   if(cadview.camera?.id!=='3d')cadview.setCameraType('3d');
