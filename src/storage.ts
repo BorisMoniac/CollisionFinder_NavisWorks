@@ -1,14 +1,5 @@
 import { Report } from './domain';
 
-function db(): Promise<IDBDatabase> {
-  return new Promise((resolve,reject)=>{
-    const request=indexedDB.open('nashepo-collision360',1);
-    request.onupgradeneeded=()=>request.result.createObjectStore('reports',{keyPath:'id'});
-    request.onsuccess=()=>resolve(request.result);
-    request.onerror=()=>reject(request.error);
-  });
-}
-
 export function normalizeReport(report:Report):Report {
   for(const test of report.tests||[]) for(const clash of test.clashes||[]) {
     clash.properties=clash.properties&&typeof clash.properties==='object'?clash.properties:{};
@@ -18,31 +9,6 @@ export function normalizeReport(report:Report):Report {
     clash.note=typeof clash.note==='string'?clash.note:'';
   }
   return report;
-}
-
-export async function loadReports(): Promise<Report[]> {
-  const database=await db();
-  try {
-    const reports=await new Promise<Report[]>((resolve,reject)=>{
-      const request=database.transaction('reports').objectStore('reports').getAll();
-      request.onsuccess=()=>resolve(request.result);
-      request.onerror=()=>reject(request.error);
-    });
-    return reports.map(normalizeReport);
-  } finally { database.close(); }
-}
-
-export async function saveReport(report: Report): Promise<void> {
-  const database=await db();
-  try {
-    await new Promise<void>((resolve,reject)=>{
-      const transaction=database.transaction('reports','readwrite');
-      transaction.objectStore('reports').put(report);
-      transaction.oncomplete=()=>resolve();
-      transaction.onerror=()=>reject(transaction.error);
-      transaction.onabort=()=>reject(transaction.error);
-    });
-  } finally { database.close(); }
 }
 
 export function readSession(source: string): Report {

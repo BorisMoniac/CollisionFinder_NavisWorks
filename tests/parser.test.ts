@@ -8,6 +8,7 @@ import {guidKey,resolveElement} from '../src/matching';
 import {markerPoint,defaultSettings,showMarkers,focusMarker,hideMarkers,warningShapes} from '../src/markers';
 import {columnValue,tableColumns} from '../src/columns';
 import {rowsForTests,subsetReport,summarize} from '../src/workflow';
+import {mountPanel} from '../src/panel';
 
 const fixture=readFileSync('tests/fixtures/navisworks.html','utf8');
 const xml=`<?xml version="1.0"?><exchange><batchtest><clashtests><clashtest name="Проверка"><clashresults><clashgroup name="Группа А"><clashresults><clashresult name="Коллизия 1" status="new" distance="-0.1" href="img.jpg"><clashpoint><pos3f x="0" y="-1.5" z="4"/></clashpoint><clashobjects><clashobject><objectattribute><name>IfcGUID</name><value>3LBE45tFTCHgZsJcGxf7ep</value></objectattribute><pathlink><node>model.ifc</node></pathlink></clashobject><clashobject><objectattribute><name>GlobalId</name><value>3LBE45tFTCHgZsJcGxf7es</value></objectattribute></clashobject></clashobjects></clashresult></clashresults></clashgroup></clashresults></clashtest><clashtest name="Пустая"/></clashtests></batchtest></exchange>`;
@@ -59,7 +60,7 @@ describe('Знаки и идентификаторы',()=>{
   it('не теряет регистр IFC GUID и переводит сжатый GUID в UUID',()=>{expect(guidKey('0000000000000000000000')).toBe('0'.repeat(32));expect(guidKey('3$$$$$$$$$$$$$$$$$$$$$')).toBe('f'.repeat(32));expect(guidKey('3LBE45tFTCHgZsJcGxf7ep')).not.toBe(guidKey('3LBE45tFTCHgZsJcGxf7eP'));});
   it('не связывает одинаковые ID из разных моделей',()=>{const ref={guid:'',id:'123',source:'a.ifc',name:'',properties:{}};const entries=[{object:1,guids:[],ids:['123'],source:'a.smdx'},{object:2,guids:[],ids:['123'],source:'b.ifc'}];expect(resolveElement(ref,entries).map(item=>item.object)).toEqual([1]);expect(resolveElement({...ref,guid:'missing'},entries)).toEqual([]);});
 
-  it('рисует цельный знак Robur, белое восклицание, жёлтый выбор и зелёный статус',()=>{
+  it('рисует цельный знак с восклицанием без увеличения при выборе',()=>{
     const clash=parseReport(xml,'x.xml').tests[0].clashes[0];
     clash.reviewed=true;
     const transformed={...defaultSettings(),radius:1,scale:.001,offset:[10,20,30] as [number,number,number]};
@@ -77,6 +78,7 @@ describe('Знаки и идентификаторы',()=>{
     expect(selectedLabel.labelBackground).toBe('#f2c94c');
     expect(selectedLabel.shapes!.some(shape=>shape.type==='polyline'&&shape.fillColor==='#f2c94c')).toBe(true);
     expect(selectedLabel.shapes!.filter(shape=>shape.type==='polyline'&&shape.fillColor==='#ffffff')).toHaveLength(2);
+    expect(selectedLabel.activeShapes).toEqual(selectedLabel.shapes);
     expect(warningShapes([0,0,0],1,'#ff0000',true).filter(shape=>shape.type==='line')).toHaveLength(1);
     showMarkers(context,[clash],defaultSettings(),()=>{},'');
     expect(layerLists[0][0].shapes!.some(shape=>shape.type==='polyline'&&shape.fillColor==='#28b94b')).toBe(true);
@@ -129,5 +131,20 @@ describe('Рабочие наборы и массовый отчёт',()=>{
     expect(html).toContain('<th>№</th><th>Коллизия</th><th>Проверка</th><th>Состояние</th>');
     expect(html).toContain('data-state="Исключена"');
     expect(html).toContain('Все проверки');
+    expect(html).not.toContain('top:128px');
+  });
+});
+
+describe('Первый запуск',()=>{
+  it('начинает без отчёта и явно предлагает открыть отчёт или сессию',async()=>{
+    const container=document.createElement('div');document.body.append(container);
+    await mountPanel(container,{mode:'Готово',markers:vi.fn(),hide:vi.fn(),focus:vi.fn()});
+    const root=container.shadowRoot!;
+    expect(root.querySelector('#reports')?.textContent).toContain('Нет загруженных отчётов');
+    expect(root.querySelector('.welcome h3')?.textContent).toBe('Загрузите отчёт');
+    expect(root.querySelector('#open-session')?.textContent).toBe('Открыть сессию');
+    expect(root.querySelector('#export')?.textContent).toBe('Сформировать отчёт');
+    expect(root.querySelector('#bulk-export')).toBeNull();
+    container.remove();
   });
 });

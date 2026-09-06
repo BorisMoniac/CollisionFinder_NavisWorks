@@ -5,12 +5,17 @@
   "apx": true,
   "displayName": "НашеПО · Коллизии",
   "description": "Просмотр отчетов Navisworks HTML/XML и навигация по объектам IFC/SMDX",
+  "author": {"name": "НашеПО"},
+  "repository": {"type": "git", "url": "https://github.com/BorisMoniac/CollisionFinder_NavisWorks.git"},
+  "homepage": "https://borismoniac.github.io/CollisionFinder_NavisWorks/",
+  "keywords": ["коллизии", "Navisworks", "IFC", "SMDX", "Топоматик 360"],
   "main": "src/index.ts",
   "sdk": "^1.4.0",
   "scripts": {
     "serve": "albatros-cli serve",
     "prebuild": "node scripts/clean-build.mjs",
     "build": "albatros-cli build",
+    "postbuild": "node scripts/create-publish-index.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "preview": "node scripts/preview.mjs"

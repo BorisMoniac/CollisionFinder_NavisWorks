@@ -65,6 +65,9 @@ header { min-height: 54px; padding: 7px 12px; }
 .brand strong { color: #f3f6fa; font-size: 16px; letter-spacing: .15px; }
 .brand .version { font-size: 9px; }
 .toolbar button { font-size: 11px; padding: 7px 9px; }
+.toolbar { align-items: center; }
+.toolbar-report { flex-direction: row; align-items: center; gap: 6px; white-space: nowrap; }
+.toolbar-report select { width: 170px; padding: 6px 7px; }
 .notice { font-size: 10px; }
 .workspace { grid-template-columns: minmax(220px,16%) minmax(500px,1fr) minmax(390px,29%); }
 .summary span, .summary div, .summary small { font-size: 10px; }
@@ -73,7 +76,12 @@ header { min-height: 54px; padding: 7px 12px; }
 .settings p { font-size: 10px; }
 
 #tests { display: flex; flex-direction: column; gap: 2px; }
-.test-search { width: 100%; margin: 3px 0 7px; }
+.summary { order: 1; flex: 0 0 auto; margin-bottom: 5px; }
+.settings { order: 2; }
+.test-heading { order: 3; display: flex; flex-direction: column; gap: 4px; margin: 1px 0 7px; }
+.test-heading h2 { display: flex; justify-content: space-between; margin: 0 2px; }
+.test-search { width: 100%; margin: 0; }
+#tests { order: 4; }
 .test-item { display: grid; grid-template-columns: 18px minmax(0,1fr) auto; align-items: center; gap: 6px; width: 100%; padding: 7px 6px; border-radius: 6px; color: #cdd5df; cursor: pointer; }
 .test-item:hover { background: #2d3743; }
 .test-item.active { background: #35485f; color: #f4ca4d; }
@@ -91,9 +99,11 @@ header { min-height: 54px; padding: 7px 12px; }
 #clear-selection { margin-left: auto; font-size: 18px; padding: 1px 8px; }
 .list-head { font-size: 11px; }
 .legend { font-size: 10px; }
-.data-grid { font-size: 11px; }
-.data-grid th { padding: 7px 8px; font-size: 11px; }
-.data-grid td { height: 34px; padding: 6px 8px; }
+.data-grid { font-size: 12px; }
+.data-grid th { padding: 7px 8px; font-size: 12px; max-width: none; white-space: normal; line-height: 1.25; vertical-align: bottom; }
+.data-grid td { height: 34px; padding: 6px 8px; max-width: 360px; min-width: 80px; white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; user-select: text; cursor: text; }
+.data-grid tr { cursor: default; }
+.data-grid td:nth-child(2) { min-width: 46px; }
 .select-cell { min-width: 38px !important; width: 38px; max-width: 38px !important; text-align: center !important; }
 .select-cell input { width: 16px; height: 16px; margin: 0; accent-color: #f2c94c; }
 .data-grid tr.selected td:nth-child(2) { box-shadow: inset 3px 0 #f2c94c; }
@@ -102,6 +112,12 @@ header { min-height: 54px; padding: 7px 12px; }
 .detail-title small { font-size: 9px; }
 .detail-title h2 { font-size: 16px; }
 .detail-title span { font-size: 11px; }
+.detail { grid-template-columns: minmax(145px,42%) minmax(180px,1fr); }
+.snapshot { grid-column: 1; grid-row: 1; min-height: 145px; align-self: start; }
+.detail-controls { grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.detail-title { grid-column: 1; grid-row: 2; padding: 3px 2px 8px; align-self: start; }
+.detail-controls .coords, .detail-controls .state-row, .detail-controls .work-actions, .detail-controls > label { grid-column: auto; width: 100%; }
+.detail-controls .work-actions { display: flex; }
 .detail-actions button { font-size: 11px; }
 .snapshot-button { position: relative; padding: 0; color: #fff; cursor: zoom-in; }
 .snapshot-button:hover { background: #11151a; }

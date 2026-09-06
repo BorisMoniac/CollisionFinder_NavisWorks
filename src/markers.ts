@@ -37,9 +37,7 @@ export function warningShapes(point:[number,number,number],radius:number,color:s
   const front=y-radius*.12;
   const bottom=z+radius*1.9;
   const top=z+radius*5;
-  // activeShapes are a deliberately larger copy of the complete sign. This
-  // makes its stem, triangle and edges one continuous click target in 3D.
-  const grow=expanded?radius*.55:0;
+  const grow=expanded?radius*.28:0;
   const half=radius*1.65+grow;
   const shapes:Shape[]=[];
   if(showStem) shapes.push({type:'line',a:[x,y,z],b:[x,y,bottom+radius*.08],color,width:Math.max(expanded?6:2,radius*(expanded?.34:.18))});
@@ -57,7 +55,8 @@ function markerAnnotation(ctx:Context,clash:Clash,index:number,settings:MarkerSe
   const state=clash.excluded?'  [ИСКЛЮЧЕНА]':clash.reviewed?'  [ОТРАБОТАНА]':'';
   const caption=`#${index+1}  ${clash.name||'Коллизия'}${state}`;
   const activate=()=>{onSelect(clash.id);focusMarker(ctx,clash,settings);};
-  const annotation:AnnotationSimple={id:clash.id,type:'simple',position:[point[0],point[1]-settings.radius*.2,point[2]+settings.radius*5.35],shapes:warningShapes(point,settings.radius,color,settings.showStem),activeShapes:warningShapes(point,settings.radius,color,settings.showStem,true),attachment:'above',activateCommand:activate,dblCommand:activate};
+  const shapes=warningShapes(point,settings.radius,color,settings.showStem);
+  const annotation:AnnotationSimple={id:clash.id,type:'simple',position:[point[0],point[1]-settings.radius*.2,point[2]+settings.radius*5.35],shapes,activeShapes:shapes,attachment:'above',activateCommand:activate,dblCommand:activate};
   if(withLabel) Object.assign(annotation,{label:caption,description:clash.group||clash.status||'Без статуса',labelColor:color===settings.selectedColor?'#171717':'#ffffff',labelBackground:color});
   return annotation;
 }
