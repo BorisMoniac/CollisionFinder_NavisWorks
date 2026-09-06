@@ -41,7 +41,7 @@ export function warningShapes(point:[number,number,number],radius:number,color:s
   const top=z+radius*5;
   const half=radius*1.65;
   const shapes:Shape[]=[];
-  if(showStem) shapes.push({type:'line',a:[x,y,z],b:[x,y,bottom+radius*.08],color,width:stemWidth});
+  if(showStem) shapes.push({type:'line',a:[x,y,z],b:[x,y,bottom+radius*.08],color:selectionOutline||color,width:stemWidth});
   if(selectionOutline) shapes.push({type:'polyline',points:[[x-half-radius*.34,y,bottom-radius*.32],[x+half+radius*.34,y,bottom-radius*.32],[x,y,top+radius*.38],[x-half-radius*.34,y,bottom-radius*.32]],color:selectionOutline,fillColor:selectionOutline,width:2});
   shapes.push({type:'polyline',points:[[x-half-radius*.16,y,bottom-radius*.14],[x+half+radius*.16,y,bottom-radius*.14],[x,y,top+radius*.2],[x-half-radius*.16,y,bottom-radius*.14]],color:'#111111',fillColor:'#111111',width:4});
   shapes.push({type:'polyline',points:[[x-half+radius*.15,y,bottom+radius*.13],[x+half-radius*.15,y,bottom+radius*.13],[x,y,top-radius*.18],[x-half+radius*.15,y,bottom+radius*.13]],color,fillColor:color,width:2});

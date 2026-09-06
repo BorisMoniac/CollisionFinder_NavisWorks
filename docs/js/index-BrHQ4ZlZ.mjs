@@ -144,7 +144,7 @@ function re(a) {
 const ie = "nashepo.collision360.markers.v4", ae = "nashepo.collision360.selected.v4", ne = /* @__PURE__ */ new WeakMap();
 function qe(a, e, t, u, l = 6, n) {
   const [s, i, h] = a, p = i - e * 0.12, m = h + e * 1.9, g = h + e * 5, b = e * 1.65, v = [];
-  u && v.push({ type: "line", a: [s, i, h], b: [s, i, m + e * 0.08], color: t, width: l }), n && v.push({ type: "polyline", points: [[s - b - e * 0.34, i, m - e * 0.32], [s + b + e * 0.34, i, m - e * 0.32], [s, i, g + e * 0.38], [s - b - e * 0.34, i, m - e * 0.32]], color: n, fillColor: n, width: 2 }), v.push({ type: "polyline", points: [[s - b - e * 0.16, i, m - e * 0.14], [s + b + e * 0.16, i, m - e * 0.14], [s, i, g + e * 0.2], [s - b - e * 0.16, i, m - e * 0.14]], color: "#111111", fillColor: "#111111", width: 4 }), v.push({ type: "polyline", points: [[s - b + e * 0.15, i, m + e * 0.13], [s + b - e * 0.15, i, m + e * 0.13], [s, i, g - e * 0.18], [s - b + e * 0.15, i, m + e * 0.13]], color: t, fillColor: t, width: 2 });
+  u && v.push({ type: "line", a: [s, i, h], b: [s, i, m + e * 0.08], color: n || t, width: l }), n && v.push({ type: "polyline", points: [[s - b - e * 0.34, i, m - e * 0.32], [s + b + e * 0.34, i, m - e * 0.32], [s, i, g + e * 0.38], [s - b - e * 0.34, i, m - e * 0.32]], color: n, fillColor: n, width: 2 }), v.push({ type: "polyline", points: [[s - b - e * 0.16, i, m - e * 0.14], [s + b + e * 0.16, i, m - e * 0.14], [s, i, g + e * 0.2], [s - b - e * 0.16, i, m - e * 0.14]], color: "#111111", fillColor: "#111111", width: 4 }), v.push({ type: "polyline", points: [[s - b + e * 0.15, i, m + e * 0.13], [s + b - e * 0.15, i, m + e * 0.13], [s, i, g - e * 0.18], [s - b + e * 0.15, i, m + e * 0.13]], color: t, fillColor: t, width: 2 });
   for (let S = 1; S <= 12; S++) {
     const C = S / 13, O = m + e * 0.13 + (g - m - e * 0.31) * C, R = (b - e * 0.15) * (1 - C) * 0.93;
     v.push({ type: "line", a: [s - R, i - e * 0.04, O], b: [s + R, i - e * 0.04, O], color: t, width: 12 });
@@ -287,7 +287,7 @@ async function Ve(a, e) {
   const t = "nashepo.collision360.marker-settings.v4", u = "nashepo.collision360.table-settings.v2", l = C(), n = O(), s = a.attachShadow ? a.shadowRoot || a.attachShadow({ mode: "open" }) : a;
   s.innerHTML = `<style>${Xe}${Je}</style><main class="app">
     <header>
-      <div class="brand"><img src="${we}" alt=""><strong>НашеПО</strong><span class="version">0.5.5</span></div>
+      <div class="brand"><img src="${we}" alt=""><strong>НашеПО</strong><span class="version">0.5.6</span></div>
       <div class="toolbar"><button class="primary" id="import">＋ Открыть отчёт</button><label class="toolbar-report">Отчёт<select id="reports" aria-label="Текущий отчёт"></select></label><button id="folder" title="Подключить папку со снимками отчёта">Снимки</button><button id="settings">⚙ Настройки</button><button id="open-session" title="Продолжить работу из файла сессии">Открыть сессию</button><button id="session" title="Сохранить текущую работу в переносимый файл">Сохранить сессию</button><button id="export" title="Отчёт для передачи и печати">Сформировать отчёт</button><button id="help" aria-label="Справка">? Справка</button></div>
       <input type="file" id="files" accept=".html,.htm,.xml" multiple hidden><input type="file" id="session-file" accept=".json,.collision360.json" hidden><input type="file" id="directory" webkitdirectory multiple hidden>
       <div class="notice" role="status" id="message">${w(e.mode)}</div>
