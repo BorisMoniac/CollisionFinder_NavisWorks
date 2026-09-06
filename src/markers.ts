@@ -121,8 +121,8 @@ export function focusMarker(ctx:Context,clash:Clash,settings:MarkerSettings):str
   if(!point) throw Error('В отчёте нет координат этой коллизии.');
   if(!cadview) throw Error('Откройте окно проекта Топоматик 360.');
   const distance=settings.navigationRadius;
-  const target:[number,number,number]=[point[0],point[1],point[2]+settings.radius*3.45];
-  const view:[number,number,number]=[1.35,-1.35,.22];
+  const target:[number,number,number]=point;
+  const view:[number,number,number]=[1.35,-1.35,.8];
   const viewLength=Math.hypot(...view);
   const eye:[number,number,number]=[target[0]+view[0]/viewLength*distance,target[1]+view[1]/viewLength*distance,target[2]+view[2]/viewLength*distance];
   const raw:[number,number,number]=[target[0]-eye[0],target[1]-eye[1],target[2]-eye[2]];

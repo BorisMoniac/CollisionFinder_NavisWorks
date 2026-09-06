@@ -151,6 +151,9 @@ header { min-height: 54px; padding: 7px 12px; }
 .developer-links a { padding: 7px 11px; border: 1px solid #546171; border-radius: 6px; color: #f4ca4d; text-decoration: none; }
 .developer-links a:hover { background: #2a323d; border-color: #f4ca4d; }
 footer { height: 25px; font-size: 10px; }
+.settings-tabs { background: #191e25; border-bottom-color: #46515f; }
+.settings-tabs button.active { background: #4b4326; border-color: #f2c94c; color: #fff3bd; }
+.settings-note { color: #9aa6b6; }
 
 @container (max-width: 1100px) {
   .workspace { grid-template-columns: 200px minmax(430px,1fr) minmax(340px,32%); }
