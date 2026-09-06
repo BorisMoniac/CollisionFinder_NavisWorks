@@ -1,11 +1,11 @@
 {
   "$schema": "node_modules/albatros/schema.json",
   "name": "nashepo.collision360",
-  "version": "0.5.0",
-  "apx": true,
+  "version": "0.5.1",
   "displayName": "НашеПО · Коллизии",
   "description": "Просмотр отчетов Navisworks HTML/XML и навигация по объектам IFC/SMDX",
-  "author": {"name": "НашеПО"},
+  "author": {"name": "НашеПО", "url": "https://nashepo.ru/"},
+  "bugs": {"url": "https://t.me/RoburFan"},
   "repository": {"type": "git", "url": "https://github.com/BorisMoniac/CollisionFinder_NavisWorks.git"},
   "homepage": "https://borismoniac.github.io/CollisionFinder_NavisWorks/",
   "keywords": ["коллизии", "Navisworks", "IFC", "SMDX", "Топоматик 360"],
@@ -17,8 +17,7 @@
     "build": "albatros-cli build",
     "postbuild": "node scripts/create-publish-index.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "preview": "node scripts/preview.mjs"
+    "test": "vitest run"
   },
   "devDependencies": {"albatros": "1.4.2", "typescript": "~5.9.3", "vitest": "^3.2.4", "jsdom": "^26.1.0", "esbuild": "^0.25.0"},
   "albatros": {

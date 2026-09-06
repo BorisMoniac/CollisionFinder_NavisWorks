@@ -79,7 +79,9 @@ describe('Знаки и идентификаторы',()=>{
     expect(selectedLabel.shapes!.some(shape=>shape.type==='polyline'&&shape.fillColor==='#f2c94c')).toBe(true);
     expect(selectedLabel.shapes!.filter(shape=>shape.type==='polyline'&&shape.fillColor==='#ffffff')).toHaveLength(2);
     expect(selectedLabel.activeShapes).toEqual(selectedLabel.shapes);
-    expect(warningShapes([0,0,0],1,'#ff0000',true).filter(shape=>shape.type==='line')).toHaveLength(1);
+    const clickableShapes=warningShapes([0,0,0],1,'#ff0000',true,9).filter(shape=>shape.type==='line');
+    expect(clickableShapes).toHaveLength(13);
+    expect(clickableShapes[0].width).toBe(9);
     showMarkers(context,[clash],defaultSettings(),()=>{},'');
     expect(layerLists[0][0].shapes!.some(shape=>shape.type==='polyline'&&shape.fillColor==='#28b94b')).toBe(true);
     expect([...layers.values()].at(-1)!.items).toHaveLength(0);
@@ -99,9 +101,12 @@ describe('Знаки и идентификаторы',()=>{
     expect(cadview.setCameraType).toHaveBeenCalledWith('3d');
     expect(cadview.lookAt).toHaveBeenCalledTimes(1);
     const [eye,direction,up,,pivot]=cadview.lookAt.mock.calls[0];
-    expect(Math.hypot(eye[0]-pivot[0],eye[1]-pivot[1],eye[2]-pivot[2])).toBeGreaterThan(defaultSettings().radius*9);
+    expect(Math.hypot(eye[0]-pivot[0],eye[1]-pivot[1],eye[2]-pivot[2])).toBeCloseTo(defaultSettings().navigationRadius,8);
     expect(eye[0]).toBeGreaterThan(pivot[0]);expect(eye[1]).toBeLessThan(pivot[1]);expect(eye[2]).toBeGreaterThan(pivot[2]);
     expect(direction[0]).toBeLessThan(0);expect(direction[1]).toBeGreaterThan(0);expect(up).toEqual([0,0,1]);
+    focusMarker(context,clash,{...defaultSettings(),navigationRadius:30});
+    const [farEye,,,,farPivot]=cadview.lookAt.mock.calls[1];
+    expect(Math.hypot(farEye[0]-farPivot[0],farEye[1]-farPivot[1],farEye[2]-farPivot[2])).toBeCloseTo(30,8);
     hideMarkers(context);expect(released).toHaveLength(2);
     vi.useRealTimers();
   });

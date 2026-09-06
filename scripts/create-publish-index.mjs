@@ -1,11 +1,9 @@
-import {copyFileSync,writeFileSync} from 'node:fs';
+import {writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 
 const root=resolve(import.meta.dirname,'..');
-const apxName='nashepo.collision360.apx';
 const pluginUrl='https://borismoniac.github.io/CollisionFinder_NavisWorks/';
 const installUrl=`https://360.topomatic.ru/?extensionInstallPath=${encodeURIComponent(pluginUrl)}`;
-copyFileSync(resolve(root,'apx',apxName),resolve(root,'dist',apxName));
 
 writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
 <html lang="ru">
@@ -18,10 +16,10 @@ writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
   </style>
 </head>
 <body><main>
-  <small>Версия 0.5.0</small>
+  <small>Версия 0.5.1</small>
   <h1>НашеПО · Коллизии</h1>
   <p>Плагин для загрузки HTML/XML-отчётов Navisworks, просмотра коллизий и навигации по их координатам в Топоматик 360.</p>
-  <div class="buttons"><a class="button" href="${installUrl}">Установить в Топоматик 360</a><a class="button secondary" href="./${apxName}" download>Скачать APX</a><a class="button secondary" href="https://github.com/BorisMoniac/CollisionFinder_NavisWorks">Исходный код</a></div>
+  <div class="buttons"><a class="button" href="${installUrl}">Установить в Топоматик 360</a><a class="button secondary" href="https://github.com/BorisMoniac/CollisionFinder_NavisWorks">Исходный код</a></div>
   <ol><li>Нажмите <b>Установить в Топоматик 360</b>.</li><li>Подтвердите подключение в открывшемся разделе плагинов.</li><li>После установки откройте нижнюю вкладку <b>Коллизии</b> и загрузите отчёт или сохранённую сессию.</li></ol>
-  <p><small>APX предназначен для установки из файла в настольном приложении Топоматик 360.</small></p>
+  <p><small>Разработчик: <a href="https://nashepo.ru/">НашеПО</a> · <a href="https://t.me/RoburFan">Telegram-сообщество</a></small></p>
 </main></body></html>\n`,'utf8');

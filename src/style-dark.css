@@ -147,6 +147,9 @@ header { min-height: 54px; padding: 7px 12px; }
 .help-content dl { display: grid; grid-template-columns: 155px 1fr; gap: 8px 12px; margin: 10px 0 0; }
 .help-content dt { color: #f4ca4d; font-weight: 600; }
 .help-content dd { margin: 0; color: #bac4d0; }
+.developer-links { display: flex; flex-wrap: wrap; gap: 10px; }
+.developer-links a { padding: 7px 11px; border: 1px solid #546171; border-radius: 6px; color: #f4ca4d; text-decoration: none; }
+.developer-links a:hover { background: #2a323d; border-color: #f4ca4d; }
 footer { height: 25px; font-size: 10px; }
 
 @container (max-width: 1100px) {
