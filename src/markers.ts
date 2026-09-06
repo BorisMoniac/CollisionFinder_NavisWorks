@@ -34,7 +34,7 @@ interface LayerState {signature:string}
 const states=new WeakMap<object,LayerState>();
 
 /** The vertical stem ends exactly at the clash point. There is intentionally no horizontal foot or callout. */
-export function warningShapes(point:[number,number,number],radius:number,color:string,showStem:boolean,stemWidth=6):Shape[] {
+export function warningShapes(point:[number,number,number],radius:number,color:string,showStem:boolean,stemWidth=6,selectionOutline?:string):Shape[] {
   const [x,y,z]=point;
   const front=y-radius*.12;
   const bottom=z+radius*1.9;
@@ -42,6 +42,7 @@ export function warningShapes(point:[number,number,number],radius:number,color:s
   const half=radius*1.65;
   const shapes:Shape[]=[];
   if(showStem) shapes.push({type:'line',a:[x,y,z],b:[x,y,bottom+radius*.08],color,width:stemWidth});
+  if(selectionOutline) shapes.push({type:'polyline',points:[[x-half-radius*.34,y,bottom-radius*.32],[x+half+radius*.34,y,bottom-radius*.32],[x,y,top+radius*.38],[x-half-radius*.34,y,bottom-radius*.32]],color:selectionOutline,fillColor:selectionOutline,width:2});
   shapes.push({type:'polyline',points:[[x-half-radius*.16,y,bottom-radius*.14],[x+half+radius*.16,y,bottom-radius*.14],[x,y,top+radius*.2],[x-half-radius*.16,y,bottom-radius*.14]],color:'#111111',fillColor:'#111111',width:4});
   shapes.push({type:'polyline',points:[[x-half+radius*.15,y,bottom+radius*.13],[x+half-radius*.15,y,bottom+radius*.13],[x,y,top-radius*.18],[x-half+radius*.15,y,bottom+radius*.13]],color,fillColor:color,width:2});
   // The SDK detects lines reliably but does not consistently include a filled
@@ -60,20 +61,22 @@ export function warningShapes(point:[number,number,number],radius:number,color:s
   return shapes;
 }
 
-function markerAnnotations(ctx:Context,clash:Clash,index:number,settings:MarkerSettings,onSelect:(id:string)=>void,color:string,withLabel:boolean):Annotation[] {
+function markerAnnotations(ctx:Context,clash:Clash,index:number,settings:MarkerSettings,onSelect:(id:string)=>void,color:string,withLabel:boolean,selected=false):Annotation[] {
   const point=markerPoint(clash,settings)!;
   const state=clash.excluded?'  [ИСКЛЮЧЕНА]':clash.reviewed?'  [ОТРАБОТАНА]':'';
   const caption=`#${index+1}  ${clash.name||'Коллизия'}${state}`;
   const activate=()=>{onSelect(clash.id);focusMarker(ctx,clash,settings);};
-  const shapes=warningShapes(point,settings.radius,color,settings.showStem,settings.stemWidth);
+  const shapes=warningShapes(point,settings.radius,color,settings.showStem,settings.stemWidth,selected?settings.selectedColor:undefined);
   const annotations:Annotation[]=[{id:clash.id,type:'shaped',shapes,activeShapes:shapes,activateCommand:activate,dblCommand:activate}];
-  if(withLabel) annotations.push({id:clash.id+':label',type:'simple',position:[point[0],point[1]-settings.radius*.2,point[2]+settings.radius*5.35],attachment:'above',activateCommand:activate,dblCommand:activate,label:caption,description:clash.group||clash.status||'Без статуса',labelColor:color===settings.selectedColor?'#171717':'#ffffff',labelBackground:color});
+  if(withLabel) annotations.push({id:clash.id+':label',type:'simple',position:[point[0],point[1]-settings.radius*.2,point[2]+settings.radius*5.35],attachment:'above',activateCommand:activate,dblCommand:activate,label:caption,description:clash.group||clash.status||'Без статуса',labelColor:selected?'#171717':'#ffffff',labelBackground:selected?settings.selectedColor:color});
   return annotations;
 }
 
-function addMarker(layer:AnnotationLayer,ctx:Context,clash:Clash,index:number,settings:MarkerSettings,onSelect:(id:string)=>void,color:string,withLabel:boolean):void {
-  for(const annotation of markerAnnotations(ctx,clash,index,settings,onSelect,color,withLabel))layer.add(annotation);
+function addMarker(layer:AnnotationLayer,ctx:Context,clash:Clash,index:number,settings:MarkerSettings,onSelect:(id:string)=>void,color:string,withLabel:boolean,selected=false):void {
+  for(const annotation of markerAnnotations(ctx,clash,index,settings,onSelect,color,withLabel,selected))layer.add(annotation);
 }
+
+const markerColor=(clash:Clash,settings:MarkerSettings)=>clash.excluded?'#78818c':clash.reviewed?settings.reviewedColor:settings.unreviewedColor;
 
 function baseSignature(clashes:Clash[],settings:MarkerSettings):string {
   return JSON.stringify({clashes:clashes.map(clash=>[clash.id,clash.enabled,clash.reviewed,clash.excluded,clash.name,clash.group,clash.status,clash.point]),settings:{...settings,labelMode:settings.labelMode==='all'?'all':'none'}});
@@ -93,13 +96,13 @@ export function showMarkers(ctx:Context,clashes:Clash[],settings:MarkerSettings,
     base.clear();
     clashes.forEach((clash,index)=>{
       if(!clash.enabled||!markerPoint(clash,settings))return;
-      const color=clash.excluded?'#78818c':clash.reviewed?settings.reviewedColor:settings.unreviewedColor;
+      const color=markerColor(clash,settings);
       addMarker(base!,ctx,clash,index,settings,onSelect,color,settings.labelMode==='all');
     });
   }
   const selectedIndex=clashes.findIndex(clash=>clash.id===selectedId);
   const selected=clashes[selectedIndex];
-  if(selected?.enabled&&markerPoint(selected,settings)) addMarker(selectedLayer,ctx,selected,selectedIndex,settings,onSelect,settings.selectedColor,settings.labelMode==='selected');
+  if(selected?.enabled&&markerPoint(selected,settings)) addMarker(selectedLayer,ctx,selected,selectedIndex,settings,onSelect,markerColor(selected,settings),settings.labelMode==='selected',true);
   base.visible=true;selectedLayer.visible=true;
   states.set(cadview as object,{signature});
   cadview.invalidate();

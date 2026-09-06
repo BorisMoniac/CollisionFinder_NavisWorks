@@ -26,7 +26,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
   const root=container.attachShadow?container.shadowRoot||container.attachShadow({mode:'open'}):container;
   root.innerHTML=`<style>${css}${darkCss}</style><main class="app">
     <header>
-      <div class="brand"><img src="${brandLogo}" alt=""><strong>НашеПО</strong><span class="version">0.5.4</span></div>
+      <div class="brand"><img src="${brandLogo}" alt=""><strong>НашеПО</strong><span class="version">0.5.5</span></div>
       <div class="toolbar"><button class="primary" id="import">＋ Открыть отчёт</button><label class="toolbar-report">Отчёт<select id="reports" aria-label="Текущий отчёт"></select></label><button id="folder" title="Подключить папку со снимками отчёта">Снимки</button><button id="settings">⚙ Настройки</button><button id="open-session" title="Продолжить работу из файла сессии">Открыть сессию</button><button id="session" title="Сохранить текущую работу в переносимый файл">Сохранить сессию</button><button id="export" title="Отчёт для передачи и печати">Сформировать отчёт</button><button id="help" aria-label="Справка">? Справка</button></div>
       <input type="file" id="files" accept=".html,.htm,.xml" multiple hidden><input type="file" id="session-file" accept=".json,.collision360.json" hidden><input type="file" id="directory" webkitdirectory multiple hidden>
       <div class="notice" role="status" id="message">${e(host.mode)}</div>
@@ -49,7 +49,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
       <div class="settings-tabs" id="settings-tabs"><button class="active" data-settings-tab="markers">Знаки</button><button data-settings-tab="camera">Камера и координаты</button><button data-settings-tab="columns">Столбцы таблицы</button></div>
       <section class="settings-page marker-settings-page" data-settings-page="markers"><div class="settings-grid">
         <label>Размер знака, м<input id="radius" type="number" value="${settings.radius}" min="0.05" step="0.25"></label><label>Подписи<select id="label-mode"><option value="selected">Только выбранная</option><option value="all">Все</option><option value="none">Не показывать</option></select></label>
-        <label>Цвет новых<input id="unreviewed-color" type="color" value="${e(settings.unreviewedColor)}"></label><label>Цвет отработанных<input id="reviewed-color" type="color" value="${e(settings.reviewedColor)}"></label><label>Цвет выбранного<input id="selected-color" type="color" value="${e(settings.selectedColor)}"></label>
+        <label>Цвет новых<input id="unreviewed-color" type="color" value="${e(settings.unreviewedColor)}"></label><label>Цвет отработанных<input id="reviewed-color" type="color" value="${e(settings.reviewedColor)}"></label><label>Окантовка выбранного<input id="selected-color" type="color" value="${e(settings.selectedColor)}"></label>
         <label>Толщина ножки, px<input id="stem-width" type="number" value="${settings.stemWidth}" min="1" max="30" step="1"></label><label class="check"><input id="show-stem" type="checkbox" ${settings.showStem?'checked':''}> Ножка до точки конфликта</label>
       </div><p class="settings-note">Щелчок по знаку выбирает коллизию. Конец ножки расположен точно в координате конфликта.</p></section>
       <section class="settings-page marker-settings-page" data-settings-page="camera" hidden><div class="settings-grid">
