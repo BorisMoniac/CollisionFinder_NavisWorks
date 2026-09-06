@@ -22,7 +22,7 @@ writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
   <label class="address-label" for="plugin-url">Адрес плагина</label>
   <div class="address"><input id="plugin-url" value="${pluginUrl}" readonly><button id="copy-url" type="button">Копировать</button></div>
   <div class="buttons"><a class="button" href="${installUrl}">Открыть установку в веб-версии</a><a class="button secondary" href="https://github.com/BorisMoniac/CollisionFinder_NavisWorks">Исходный код</a></div>
-  <ol><li>Откройте в настольном Топоматик 360 раздел <b>Плагины</b>.</li><li>Выберите <b>Установить плагин</b>.</li><li>Скопируйте адрес выше, вставьте его в поле и подтвердите установку.</li><li>Откройте нижнюю вкладку <b>Коллизии</b>.</li></ol>
+  <ol><li>Откройте в настольном Топоматик 360 раздел <b>Плагины</b>.</li><li>Выберите <b>Установить плагин</b>.</li><li>Скопируйте адрес выше, вставьте его в поле и подтвердите установку.</li><li>После первой установки перезапустите приложение. В веб-версии обновите страницу Топоматик 360.</li><li>Откройте нижнюю вкладку <b>Коллизии</b>.</li></ol>
   <p><small>Разработчик: <a href="https://nashepo.ru/">НашеПО</a> · <a href="https://t.me/RoburFan">Telegram-сообщество</a></small></p>
 </main><script>const input=document.getElementById('plugin-url'),button=document.getElementById('copy-url');button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(input.value)}catch{input.select();document.execCommand('copy')}button.textContent='Скопировано';setTimeout(()=>button.textContent='Копировать',1600)})</script></body></html>\n`,'utf8');
 
