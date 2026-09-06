@@ -1,4 +1,4 @@
-import {copyFileSync,mkdirSync,readdirSync,writeFileSync} from 'node:fs';
+import {copyFileSync,existsSync,mkdirSync,readdirSync,unlinkSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 
 const root=resolve(import.meta.dirname,'..');
@@ -27,6 +27,8 @@ writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
 </main><script>const input=document.getElementById('plugin-url'),button=document.getElementById('copy-url');button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(input.value)}catch{input.select();document.execCommand('copy')}button.textContent='Скопировано';setTimeout(()=>button.textContent='Копировать',1600)})</script></body></html>\n`,'utf8');
 
 const published=resolve(root,'docs');
+const publishedJs=resolve(published,'js');
+if(existsSync(publishedJs))for(const entry of readdirSync(publishedJs,{withFileTypes:true}))if(entry.isFile())unlinkSync(resolve(publishedJs,entry.name));
 function copyTree(source,target) {
   mkdirSync(target,{recursive:true});
   for(const entry of readdirSync(source,{withFileTypes:true})) {

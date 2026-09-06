@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 const projectRoot=resolve(fileURLToPath(new URL('..',import.meta.url)));
 const trashRoot=resolve(projectRoot,'.local','build-trash',String(Date.now()));
 
-for(const name of ['dist','docs']) {
+for(const name of ['dist']) {
   const target=resolve(projectRoot,name);
   if(!target.startsWith(projectRoot+sep)) throw new Error(`Недопустимый путь сборки: ${target}`);
   if(existsSync(target)) {
