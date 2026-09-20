@@ -7,6 +7,7 @@ import { CollisionRow, TableColumn, columnValue, defaultVisibleColumnKeys, table
 import { rowsForTests, subsetReport, summarize } from './workflow';
 import { brandLogo } from './brand';
 import { readClashPackage } from './package';
+import { watchSceneOwner } from './scene-owner';
 import css from './style.css?inline';
 import darkCss from './style-dark.css?inline';
 import { version as pluginVersion } from '../package.json';
@@ -74,6 +75,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
   const selectedTests=new Set<string>();
   const checked=new Set<string>();
   let selected='';let page=0;let showing=true;
+  let sceneActive=false;
   const pageSize=50;
   const saveIndicator=document.createElement('small');saveIndicator.id='save-state';saveIndicator.setAttribute('role','status');root.querySelector('header')!.append(saveIndicator);
 
@@ -90,7 +92,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
   function rows():CollisionRow[]{const search=q<HTMLInputElement>('search').value.toLowerCase();const status=q<HTMLSelectElement>('status').value;const review=q<HTMLSelectElement>('review').value;const visibility=q<HTMLSelectElement>('visibility').value;return scopeRows().filter(row=>(!status||row.clash.status===status)&&(!review||(review==='work'?!row.clash.reviewed&&!row.clash.excluded:review==='reviewed'?row.clash.reviewed&&!row.clash.excluded:row.clash.excluded))&&(!visibility||row.clash.enabled===(visibility==='yes'))&&(!search||JSON.stringify(row).toLowerCase().includes(search)));}
   const current=()=>allRows().find(row=>row.clash.id===selected)?.clash;
   function pick(id:string,update=true){selected=id;const index=rows().findIndex(row=>row.clash.id===id);if(index>=0)page=Math.floor(index/pageSize);renderList();renderDetail();if(update&&showing)setTimeout(()=>run(refreshMarkers),0);}
-  async function refreshMarkers(){if(showing&&report)await host.markers(rows().map(row=>row.clash),getSettings(),pick,selected);}
+  async function refreshMarkers(){if(sceneActive&&showing&&report)await host.markers(rows().map(row=>row.clash),getSettings(),pick,selected);}
   function updateToggle(){const button=q<HTMLButtonElement>('markers-toggle');button.classList.toggle('on',showing);button.setAttribute('aria-checked',String(showing));button.textContent=showing?'● Знаки включены':'○ Знаки выключены';}
 
   function orderedColumns():TableColumn[]{const catalog=tableColumns(allRows());const order=new Map(tableSettings.order.map((key,index)=>[key,index]));return catalog.sort((a,b)=>(order.get(a.key)??99999)-(order.get(b.key)??99999)).filter(column=>(tableSettings.showAll||tableSettings.visible.includes(column.key))&&(!tableSettings.hideEmpty||allRows().some(row=>columnValue(row,column.key).trim())));}
@@ -134,4 +136,5 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
   q<HTMLInputElement>('show-all-columns').onchange=()=>{tableSettings.showAll=q<HTMLInputElement>('show-all-columns').checked;persistTable();renderList();};q<HTMLInputElement>('hide-empty-columns').onchange=()=>{tableSettings.hideEmpty=q<HTMLInputElement>('hide-empty-columns').checked;persistTable();renderList();};q('select-columns').onclick=()=>{tableSettings.visible=tableColumns(allRows()).map(column=>column.key);persistTable();renderColumnSettings();renderList();};q('clear-columns').onclick=()=>{tableSettings.visible=[];tableSettings.showAll=false;persistTable();renderColumnSettings();renderList();};q('reset-columns').onclick=()=>{Object.assign(tableSettings,{visible:[...defaultVisibleColumnKeys],order:[],names:{},showAll:false,hideEmpty:false});persistTable();renderColumnSettings();renderList();};
   q('session').onclick=()=>run(()=>{if(!report)throw Error('Сначала откройте отчёт.');download(report.name.replace(/\.[^.]+$/,'')+'.collision360.json',JSON.stringify(report,null,2),'application/json');saveIndicator.textContent='Сессия сохранена';return 'Рабочая сессия сохранена. Для продолжения используйте «Открыть сессию».';});q('export').onclick=()=>run(()=>{const data=selectionReport();download(data.name.replace(/\.[^.]+$/,'')+'-review.html',reportHtml(data),'text/html;charset=utf-8');return `HTML-отчёт сформирован: ${data.tests.reduce((sum,test)=>sum+test.clashes.length,0)} коллизий.`;});
   render();
+  return watchSceneOwner(container,()=>{sceneActive=true;void run(refreshMarkers);},()=>{sceneActive=false;void run(()=>host.hide());});
 }

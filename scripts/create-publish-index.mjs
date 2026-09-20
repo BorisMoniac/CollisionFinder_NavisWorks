@@ -1,7 +1,8 @@
-import {copyFileSync,existsSync,mkdirSync,readdirSync,unlinkSync,writeFileSync} from 'node:fs';
+import {copyFileSync,existsSync,mkdirSync,readdirSync,readFileSync,unlinkSync,writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 
 const root=resolve(import.meta.dirname,'..');
+const version=JSON.parse(readFileSync(resolve(root,'package.json'),'utf8')).version;
 const pluginUrl='https://borismoniac.github.io/CollisionFinder_NavisWorks/';
 const installUrl=`https://360.topomatic.ru/?extensionInstallPath=${encodeURIComponent(pluginUrl)}`;
 
@@ -16,7 +17,7 @@ writeFileSync(resolve(root,'dist','index.html'),`<!doctype html>
   </style>
 </head>
 <body><main>
-  <small>Версия 0.5.6</small>
+  <small>Версия ${version}</small>
   <h1>НашеПО · Коллизии</h1>
   <p>Плагин для загрузки HTML/XML-отчётов Navisworks, просмотра коллизий и навигации по их координатам в Топоматик 360.</p>
   <label class="address-label" for="plugin-url">Адрес плагина</label>
