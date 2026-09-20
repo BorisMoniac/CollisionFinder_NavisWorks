@@ -25,7 +25,8 @@ function parseHtml(source: string, report: Report) {
     if(!table.matches('.mainTable')) continue;
     const test: ClashTest={id:`${report.id}:t${report.tests.length}`,name:testName,clashes:[]};
     const rows=Array.from(table.rows);
-    const header=rows.find(r=>Array.from(r.cells).some(c=>c.matches('.item1Header')));
+    const header=rows.filter(r=>Array.from(r.cells).some(c=>c.matches('.item1Header')))
+      .sort((a,b)=>b.cells.length-a.cells.length)[0];
     if(!header) {report.warnings.push(`Не распознаны колонки проверки «${testName}».`); continue;}
     const columns=Array.from(header.cells).flatMap(cell=>Array.from({length:cell.colSpan},()=>({name:text(cell),side:cell.matches('.item1Header')?1:cell.matches('.item2Header')?2:0})));
     let group='';

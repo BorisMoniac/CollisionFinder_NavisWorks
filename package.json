@@ -1,9 +1,9 @@
 {
   "$schema": "node_modules/albatros/schema.json",
   "name": "nashepo.collision360",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "displayName": "НашеПО · Коллизии",
-  "description": "Просмотр отчетов Navisworks HTML/XML и навигация по объектам IFC/SMDX",
+  "description": "Просмотр пакетов коллизий ZIP и отчётов Navisworks HTML/XML с навигацией по IFC/SMDX",
   "author": {"name": "НашеПО", "url": "https://nashepo.ru/"},
   "bugs": {"url": "https://t.me/RoburFan"},
   "repository": {"type": "git", "url": "https://github.com/BorisMoniac/CollisionFinder_NavisWorks.git"},
@@ -17,6 +17,7 @@
     "postbuild": "node scripts/create-publish-index.mjs",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {"fflate": "^0.8.2"},
   "devDependencies": {"albatros": "1.4.2", "typescript": "~5.9.3"},
   "albatros": {
     "actions": {"collision_open": {"label": "Отчёты о коллизиях", "cmd": "open", "icon": "report_problem"}},

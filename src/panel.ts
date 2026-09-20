@@ -6,8 +6,10 @@ import { MarkerSettings, MarkerLabelMode, defaultSettings, validateSettings } fr
 import { CollisionRow, TableColumn, columnValue, defaultVisibleColumnKeys, tableColumns } from './columns';
 import { rowsForTests, subsetReport, summarize } from './workflow';
 import { brandLogo } from './brand';
+import { readClashPackage } from './package';
 import css from './style.css?inline';
 import darkCss from './style-dark.css?inline';
+import { version as pluginVersion } from '../package.json';
 
 export interface PanelHost {
   mode:string;
@@ -26,9 +28,9 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
   const root=container.attachShadow?container.shadowRoot||container.attachShadow({mode:'open'}):container;
   root.innerHTML=`<style>${css}${darkCss}</style><main class="app">
     <header>
-      <div class="brand"><img src="${brandLogo}" alt=""><strong>НашеПО</strong><span class="version">0.5.6</span></div>
+      <div class="brand"><img src="${brandLogo}" alt=""><strong>НашеПО</strong><span class="version">${pluginVersion}</span></div>
       <div class="toolbar"><button class="primary" id="import">＋ Открыть отчёт</button><label class="toolbar-report">Отчёт<select id="reports" aria-label="Текущий отчёт"></select></label><button id="folder" title="Подключить папку со снимками отчёта">Снимки</button><button id="settings">⚙ Настройки</button><button id="open-session" title="Продолжить работу из файла сессии">Открыть сессию</button><button id="session" title="Сохранить текущую работу в переносимый файл">Сохранить сессию</button><button id="export" title="Отчёт для передачи и печати">Сформировать отчёт</button><button id="help" aria-label="Справка">? Справка</button></div>
-      <input type="file" id="files" accept=".html,.htm,.xml" multiple hidden><input type="file" id="session-file" accept=".json,.collision360.json" hidden><input type="file" id="directory" webkitdirectory multiple hidden>
+      <input type="file" id="files" accept=".zip,.html,.htm,.xml" multiple hidden><input type="file" id="session-file" accept=".json,.collision360.json,.zip" hidden><input type="file" id="directory" webkitdirectory multiple hidden>
       <div class="notice" role="status" id="message">${e(host.mode)}</div>
     </header>
     <div class="workspace">
@@ -44,7 +46,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
       </section>
       <section id="detail" class="detail"></section>
     </div>
-    <footer>Navisworks HTML / XML <span>Двойной щелчок по строке открывает коллизию в 3D</span></footer>
+    <footer>Пакет НашеПО ZIP · Navisworks HTML / XML <span>Двойной щелчок по строке открывает коллизию в 3D</span></footer>
     <dialog id="settings-dialog" class="columns-dialog settings-dialog"><div class="dialog-title"><div><small>ПАРАМЕТРЫ РАБОТЫ</small><h2>Настройки плагина</h2></div><button id="close-settings" aria-label="Закрыть">×</button></div>
       <div class="settings-tabs" id="settings-tabs"><button class="active" data-settings-tab="markers">Знаки</button><button data-settings-tab="camera">Камера и координаты</button><button data-settings-tab="columns">Столбцы таблицы</button></div>
       <section class="settings-page marker-settings-page" data-settings-page="markers"><div class="settings-grid">
@@ -59,7 +61,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
       <section class="settings-page columns-page" data-settings-page="columns" hidden><div class="column-options"><label class="check"><input id="show-all-columns" type="checkbox"> Все столбцы</label><label class="check"><input id="hide-empty-columns" type="checkbox"> Скрыть пустые</label><button id="select-columns">Выбрать все</button><button id="clear-columns">Снять все</button><button id="reset-columns">По умолчанию</button></div><div class="column-table-wrap"><table class="column-table"><thead><tr><th>Показывать</th><th>Имя столбца</th><th>Источник</th><th>Порядок</th></tr></thead><tbody id="column-settings"></tbody></table></div><p class="settings-note">Доступны все поля строки HTML и обоих элементов. Имя и порядок можно изменить.</p></section>
     </dialog>
     <dialog id="help-dialog" class="columns-dialog help-dialog"><div class="dialog-title"><div><small>КАК УСТРОЕНА РАБОТА</small><h2>Отчёт, сессия и поля ответа</h2></div><button id="close-help">×</button></div><div class="help-content">
-      <h3>Начало работы</h3><p>Откройте HTML/XML-отчёт Navisworks. Плагин прочитает проверки и коллизии, создаст таблицу и расставит знаки в 3D по координатам отчёта. Кнопка «Снимки» подключает изображения, если они хранятся в отдельной папке.</p>
+      <h3>Начало работы</h3><p>Откройте ZIP-пакет НашеПО либо HTML/XML-отчёт Navisworks. ZIP сразу содержит машинные данные и снимки. Для распакованного или обычного отчёта кнопка «Снимки» подключает отдельную папку изображений.</p>
       <h3>Сессия и итоговый отчёт</h3><p><b>Сессия</b> — переносимый файл JSON с исходными данными, состояниями, назначениями, комментариями и снимками. Нажмите «Сохранить сессию», а для продолжения работы в следующий раз — «Открыть сессию» и выберите сохранённый файл. Загруженный отчёт не сохраняется в браузере автоматически. <b>Сформировать отчёт</b> создаёт самостоятельный HTML-документ для просмотра, поиска, фильтрации, передачи и печати. Если отмечены строки, в него попадут только они; иначе — выбранные наборы.</p>
       <h3>Состояния и поля</h3><dl><dt>Показывать знак</dt><dd>Управляет видимостью знака этой коллизии в 3D.</dd><dt>В работе</dt><dd>Коллизия требует проверки или решения.</dd><dt>Отработана</dt><dd>Проверка завершена; знак становится зелёным.</dd><dt>Исключена</dt><dd>Коллизия не учитывается в остатке работ.</dd><dt>Статус Navisworks</dt><dd>Статус из исходного отчёта. Он хранится отдельно от рабочего состояния.</dd><dt>Группа / назначение</dt><dd>Исполнитель, раздел или пакет работ.</dd><dt>Комментарий</dt><dd>Решение, результат проверки или причина исключения.</dd></dl>
       <h3>Разработчик</h3><p class="developer-links"><a href="https://nashepo.ru/" target="_blank" rel="noopener noreferrer">Сайт НашеПО</a><a href="https://t.me/RoburFan" target="_blank" rel="noopener noreferrer">Telegram-сообщество</a></p>
@@ -113,7 +115,7 @@ export async function mountPanel(container:HTMLElement,host:PanelHost) {
   function bulkState(state:'work'|'reviewed'|'excluded'){for(const row of allRows())if(checked.has(row.clash.id)){row.clash.reviewed=state==='reviewed';row.clash.excluded=state==='excluded';}updateWorkViews();}
 
   async function add(item:Report,replace=false){const incoming=normalizeReport(item);const existing=reports.find(saved=>saved.id===incoming.id);if(existing&&replace){reports=reports.map(saved=>saved.id===incoming.id?incoming:saved);report=incoming;}else if(existing){const savedClashes=new Map(existing.tests.flatMap(test=>test.clashes).map(clash=>[clash.id,clash]));for(const test of incoming.tests)for(const clash of test.clashes){const saved=savedClashes.get(clash.id);if(saved)Object.assign(clash,{enabled:saved.enabled,reviewed:saved.reviewed,excluded:saved.excluded,note:saved.note,group:saved.group});}incoming.images={...existing.images,...incoming.images};reports=reports.map(saved=>saved.id===incoming.id?incoming:saved);report=incoming;message('Отчёт обновлён. Состояния и комментарии сохранены.');}else{reports.push(incoming);report=incoming;}selectedTests.clear();checked.clear();page=0;selected=allRows()[0]?.clash.id||'';showing=true;persist();render();await refreshMarkers();}
-  async function importFiles(files:File[]){let count=0;for(const file of files.filter(item=>/\.(html?|xml|json)$/i.test(item.name))){const bytes=await file.arrayBuffer();let source=new TextDecoder().decode(bytes);if(/charset\s*=\s*["']?windows-1251/i.test(source))source=new TextDecoder('windows-1251').decode(bytes);const session=/\.json$/i.test(file.name);const item=session?readSession(source):parseReport(source,file.name);await attachImages(item,files);await add(item,session);count++;}if(!count&&report){await attachImages(report,files);persist();renderDetail();}message(count?`Загружено отчётов: ${count}. ${report?.warnings.join(' ')||''}`:'Снимки подключены.');}
+  async function importFiles(files:File[]){let count=0;for(const file of files.filter(item=>/\.(zip|html?|xml|json)$/i.test(item.name))){if(/\.zip$/i.test(file.name)){const item=await readClashPackage(await file.arrayBuffer());await add(item,true);count++;continue;}const bytes=await file.arrayBuffer();let source=new TextDecoder().decode(bytes);if(/charset\s*=\s*["']?windows-1251/i.test(source))source=new TextDecoder('windows-1251').decode(bytes);const session=/\.json$/i.test(file.name);const item=session?readSession(source):parseReport(source,file.name);await attachImages(item,files);await add(item,session);count++;}if(!count&&report){await attachImages(report,files);persist();renderDetail();}message(count?`Загружено отчётов: ${count}. ${report?.warnings.join(' ')||''}`:'Снимки подключены.');}
   async function attachImages(item:Report,files:File[]){for(const key of new Set(item.tests.flatMap(test=>test.clashes.map(clash=>clash.image)).filter(Boolean))){const matches=files.filter(file=>{const path=imageKey(file.webkitRelativePath||file.name);return path===key||path.endsWith('/'+key);});const fallback=files.filter(file=>file.name===key.split('/').at(-1));const file=matches.length===1?matches[0]:fallback.length===1?fallback[0]:undefined;if(!file||!/^image\/(jpeg|png|webp)$/.test(file.type))continue;item.images[key]=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result as string);reader.onerror=()=>reject(reader.error);reader.readAsDataURL(file);});}}
 
   q<HTMLSelectElement>('scale').value=String(settings.scale);q<HTMLSelectElement>('label-mode').value=settings.labelMode;
